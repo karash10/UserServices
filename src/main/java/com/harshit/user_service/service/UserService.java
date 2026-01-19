@@ -8,15 +8,16 @@ import com.harshit.user_service.model.User;
 
 @Service
 public class UserService {
-    private List<User> users = new ArrayList<>();
 
+    private final List<User> users = new ArrayList<>();
+
+    public User createUser(int id, String name) {
+        User user = new User(id, name);
+        users.add(user);   // 🔥 THIS WAS MISSING
+        return user;
+    }
 
     public List<User> getAllUsers() {
-        return List.of(
-            new User(1, "Alice")
-        );}
-
-    public void addUser(User user) {
-        users.add(user);
+        return List.copyOf(users);
     }
 }
