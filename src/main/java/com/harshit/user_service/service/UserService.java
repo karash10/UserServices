@@ -1,23 +1,27 @@
 package com.harshit.user_service.service;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.harshit.user_service.model.User;
+import com.harshit.user_service.repository.UserRepository;
 
 @Service
 public class UserService {
 
-    private final List<User> users = new ArrayList<>();
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User createUser(int id, String name) {
         User user = new User(id, name);
-        users.add(user);   // 🔥 THIS WAS MISSING
+        userRepository.save(user);
         return user;
     }
 
     public List<User> getAllUsers() {
-        return List.copyOf(users);
+        return userRepository.findAll();
     }
 }
