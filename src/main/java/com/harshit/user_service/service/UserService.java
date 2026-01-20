@@ -21,10 +21,13 @@ public class UserService {
         return user;
     }
     public void deleteUser(int id) {
+        if(!userRepository.existsById(id)) {
+            throw new com.harshit.user_service.exception.UserNotFoundException(id);
+        }
         userRepository.deleteById(id);
     }
     public User getUserById(int id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new com.harshit.user_service.exception.UserNotFoundException(id));
     }
     public User updateUser(int id, String name) {
     User user = getUserById(id); // managed entity
