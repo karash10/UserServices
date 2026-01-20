@@ -27,13 +27,11 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
     public User updateUser(int id, String name) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user != null) {
-            user.setName(name);
-            userRepository.save(user);
-        }
-        return user;
-    }
+    User user = getUserById(id); // managed entity
+    user.setName(name);         // change tracked automatically
+    return userRepository.save(user);
+}
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
