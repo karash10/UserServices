@@ -15,12 +15,25 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User createUser(int id, String name) {
-        User user = new User(id, name);
+    public User createUser( String name) {
+        User user = new User(0, name);
         userRepository.save(user);
         return user;
     }
-
+    public void deleteUser(int id) {
+        userRepository.deleteById(id);
+    }
+    public User getUserById(int id) {
+        return userRepository.findById(id).orElse(null);
+    }
+    public User updateUser(int id, String name) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            user.setName(name);
+            userRepository.save(user);
+        }
+        return user;
+    }
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

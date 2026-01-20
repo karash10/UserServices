@@ -29,4 +29,9 @@ public class User {
     public String getName() {
         return name;
     }
+
+    public void setName(String name2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setName'");
+    }
 }
