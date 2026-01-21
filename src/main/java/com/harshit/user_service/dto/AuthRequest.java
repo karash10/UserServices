@@ -2,7 +2,7 @@ package com.harshit.user_service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class UserRequest {
+public class AuthRequest {
 
     @NotBlank
     private String username;
