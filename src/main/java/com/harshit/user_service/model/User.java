@@ -1,5 +1,7 @@
 package com.harshit.user_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @JsonIgnore   // 👈 ADD THIS
     @Column(nullable = false)
     private String password;
 
@@ -28,7 +31,10 @@ public class User {
         this.password = password;
     }
 
+    public int getId() { return id; }
     public String getUsername() { return username; }
+
+    @JsonIgnore   // 👈 ADD THIS TOO (important)
     public String getPassword() { return password; }
 
     public void setPassword(String password) {

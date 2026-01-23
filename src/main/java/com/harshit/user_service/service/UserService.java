@@ -21,47 +21,33 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // CREATE USER (password is hashed here)
     public User createUser(String username, String rawPassword) {
 
-        String hashedPassword = passwordEncoder.encode(rawPassword);
+        String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        User user = new User(username, hashedPassword);
-
+        User user = new User(username, encodedPassword);
         return userRepository.save(user);
     }
 
-    // READ ALL USERS
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // READ USER BY ID
     public User getUserById(int id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id " + id + " not found"));
     }
 
-    // UPDATE USER (password optional – update only if needed)
     public User updateUser(int id, String newPassword) {
 
-        User user = getUserById(id); // throws 404 if not found
+        User user = getUserById(id);
 
-        if (newPassword != null && !newPassword.isBlank()) {
-            String hashedPassword = passwordEncoder.encode(newPassword);
-            user.setPassword(hashedPassword);
-        }
-
+        user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
 
-    // DELETE USER
     public void deleteUser(int id) {
-
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
-        }
-
         userRepository.deleteById(id);
     }
 }

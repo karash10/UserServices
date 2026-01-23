@@ -1,33 +1,37 @@
 package com.harshit.user_service.service;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import com.harshit.user_service.model.User;
-import com.harshit.user_service.repository.UserRepository;
-
+import com.harshit.user_service.security.JwtService;
 
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
 
-    public AuthService(UserRepository userRepository,
-                       BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthService(AuthenticationManager authenticationManager,
+                       JwtService jwtService,
+                       UserDetailsService userDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
-    public User authenticate(String username, String rawPassword) {
+    public String login(String username, String password) {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                    username, password));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
-        }
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(username);
 
-        return user;
+        return jwtService.generateToken(userDetails);
     }
 }

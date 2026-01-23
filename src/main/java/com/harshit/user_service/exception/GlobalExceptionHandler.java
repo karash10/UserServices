@@ -14,7 +14,24 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - User not found
+    // 🔐 AUTHENTICATION FAILURE → 401
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(error);
+    }
+
+    // ❌ USER NOT FOUND → 404
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(
             UserNotFoundException ex,
@@ -31,7 +48,7 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
-    // 400 - Validation errors
+    // ❌ VALIDATION ERRORS → 400
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(
             MethodArgumentNotValidException ex) {
@@ -40,8 +57,8 @@ public class GlobalExceptionHandler {
 
         ex.getBindingResult()
           .getFieldErrors()
-          .forEach(error ->
-              errors.put(error.getField(), error.getDefaultMessage())
+          .forEach(err ->
+              errors.put(err.getField(), err.getDefaultMessage())
           );
 
         return ResponseEntity
@@ -49,20 +66,20 @@ public class GlobalExceptionHandler {
                 .body(errors);
     }
 
-    // 500 - Generic fallback
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(
-            Exception ex,
-            HttpServletRequest request) {
+    // ❌ FALLBACK → 500 (LAST HANDLER)
+//     @ExceptionHandler(Exception.class)
+//     public ResponseEntity<ErrorResponse> handleGenericException(
+//             Exception ex,
+//             HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Something went wrong",
-                request.getRequestURI()
-        );
+//         ErrorResponse error = new ErrorResponse(
+//                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//                 "Something went wrong",
+//                 request.getRequestURI()
+//         );
 
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(error);
-    }
+//         return ResponseEntity
+//                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                 .body(error);
+//     }
 }
